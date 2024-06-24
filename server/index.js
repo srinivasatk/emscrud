@@ -2,7 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import ServerlessHttp from 'serverless-http';
 
 const app = express();
 
@@ -11,8 +10,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection
-// mongoose.connect('mongodb+srv://seenu100babu:TCymtpQIWoXHtzqt@mycluster1.bekzbtz.mongodb.net/employeeDB');
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect('mongodb+srv://seenu100babu:TCymtpQIWoXHtzqt@mycluster1.bekzbtz.mongodb.net/employeeDB');
+//mongoose.connect(process.env.MONGODB_URI);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
@@ -110,9 +109,8 @@ app.delete('/api/employees/:id', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 })
 
-module.exports.handler = ServerlessHttp(app);
