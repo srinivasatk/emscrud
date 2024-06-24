@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import ServerlessHttp from 'serverless-http';
 
-require('dotenv').config();
 const app = express();
 
 //Middleware
