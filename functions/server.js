@@ -23,6 +23,7 @@ db.once('open', () => {
 });
 
 // Use the imported router
-app.use('/api', routes);  // This should use the router instance
-
+// app.use('/api', routes);  // This should use the router instance
+app.use('/api',app.router);
+routes.initialize(app);
 module.exports.handler = serverless(app);
