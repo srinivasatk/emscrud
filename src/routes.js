@@ -1,37 +1,9 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-//require('dotenv').config();
+import Employee from './models/employeeModel.js';
 
-const app = express();
+const router = express.Router();
 
-//Middleware
-app.use(bodyParser.json());
-app.use(cors());
-
-// MongoDB connection
-// const uri = process.env.MONGODB_URI;
-
-mongoose.connect('mongodb+srv://seenu100babu:TCymtpQIWoXHtzqt@mycluster1.bekzbtz.mongodb.net/employeeDB');
-// mongoose.connect(uri);
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
-
-//Employee Schema
-const employeeSchema = new mongoose.Schema({
-  employeeId: { type: String, required: true, unique: true },
-  empName: { type: String, required: true },
-  department: { type: String, required: true },
-  salary: { type: Number, required: true }
-});
-
-const Employee = mongoose.model('Employee', employeeSchema);
-
-// Function to generate employee ID in format 'emp_01', 'emp_02', ...
+// Function to generate employee ID in format 'EMP_01', 'EMP_02', ...
 async function generateEmployeeId() {
   const lastEmployee = await Employee.findOne({}, {}, { sort: { 'employeeId': -1 } });
   let newIdNumber = 1;
@@ -42,9 +14,8 @@ async function generateEmployeeId() {
   return `EMP_${String(newIdNumber).padStart(2, '0')}`;
 }
 
-//Routes
-//GET Employee list
-app.get('/api/employees', async (req, res) => {
+// GET Employee list
+router.get('/employees', async (req, res) => {
   try {
     const employees = await Employee.find();
     res.send(employees);
@@ -52,11 +23,11 @@ app.get('/api/employees', async (req, res) => {
     res.status(500).send(err);
   }
 });
-//Post or Add Employee
 
+// POST or Add Employee
 let isProcessing = false; // Flag to track if a request is being processed
 
-app.post('/api/employees', async (req, res) => {
+router.post('/employees', async (req, res) => {
   if (isProcessing) {
     return res.status(409).send({ message: 'Another request is being processed. Please try again later.' });
   }
@@ -71,15 +42,14 @@ app.post('/api/employees', async (req, res) => {
 
     res.status(201).send({ message: 'Employee added successfully', employee: savedEmployee });
   } catch (err) {
-    res.status(400).send({  message: 'Error adding employee', error: err.message});
+    res.status(400).send({ message: 'Error adding employee', error: err.message });
   } finally {
     isProcessing = false; // Reset processing flag after request completes
   }
 });
 
-//patch or update the employee info if exist
-
-app.patch('/api/employees/:id', async (req, res) => {
+// PATCH or update the employee info if exists
+router.patch('/employees/:id', async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['empName', 'department', 'salary'];
   const isValidOperation = updates.every(update => allowedUpdates.includes(update));
@@ -99,8 +69,8 @@ app.patch('/api/employees/:id', async (req, res) => {
   }
 });
 
-//Delete Employee if exist
-app.delete('/api/employees/:id', async (req, res) => {
+// DELETE Employee if exists
+router.delete('/employees/:id', async (req, res) => {
   try {
     const employee = await Employee.findByIdAndDelete(req.params.id);
     if (!employee) {
@@ -112,8 +82,4 @@ app.delete('/api/employees/:id', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-})
-
+export default router;
