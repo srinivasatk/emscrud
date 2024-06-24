@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+//require('dotenv').config();
 
 const app = express();
 
@@ -10,8 +11,10 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection
+// const uri = process.env.MONGODB_URI;
+
 mongoose.connect('mongodb+srv://seenu100babu:TCymtpQIWoXHtzqt@mycluster1.bekzbtz.mongodb.net/employeeDB');
-//mongoose.connect(process.env.MONGODB_URI);
+// mongoose.connect(uri);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
