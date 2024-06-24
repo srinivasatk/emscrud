@@ -22,6 +22,7 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
+// Use the imported router
 app.use('/api', routes);  // This should use the router instance
 
 module.exports.handler = serverless(app);
